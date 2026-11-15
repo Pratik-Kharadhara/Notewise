@@ -1,13 +1,12 @@
-"""
-Audio Noise-Reduction Microservice Entry Point.
-Maintained by Member 3.
-"""
-# Placeholder FastAPI app skeleton
+import logging
+
 from fastapi import FastAPI
 
-app = FastAPI(title="Notewise Audio Cleaning Microservice")
+from app.api.routes import router
+from app.core.errors import register_exception_handlers
 
-@app.get("/health")
-def health_check():
-    return {"status": "ok"}
+logging.basicConfig(level=logging.INFO)
 
+app = FastAPI(title="Audio Noise-Reduction Service", version="1.0.0")
+register_exception_handlers(app)
+app.include_router(router)

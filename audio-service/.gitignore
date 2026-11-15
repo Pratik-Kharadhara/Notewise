@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+venv/
+.venv/
+.env
+samples/**/*.wav
+samples/snr_report.csv
+*.mp3
