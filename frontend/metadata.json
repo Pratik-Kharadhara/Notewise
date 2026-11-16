@@ -1,0 +1,6 @@
+{
+  "name": "EchoNote — Lecture Notes & AI Study Companion",
+  "description": "Record or upload classroom lectures and transform them into structured exam notes, revision sheets, cheatsheets, interactive mindmaps, and lecture-grounded Q&A.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": []
+}
