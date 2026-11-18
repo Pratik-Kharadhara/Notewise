@@ -41,7 +41,7 @@ export const PdfPrintableSheet = React.forwardRef<
             marginBottom: '6px',
           }}
         >
-          EchoNote Study Sheet · {recording.subjectLabel}
+          Notewise Study Sheet · {recording.subjectLabel}
         </div>
         <h1 style={{ fontSize: '24px', fontWeight: 700, margin: 0, color: '#0f172a' }}>
           {notes.title}
@@ -75,7 +75,7 @@ export const PdfPrintableSheet = React.forwardRef<
           Key Exam Points
         </h2>
         <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '13px', lineHeight: 1.65, color: '#334155' }}>
-          {notes.keyPoints.map((pt, i) => (
+          {(notes.keyPoints ?? notes.key_points ?? []).map((pt, i) => (
             <li key={i} style={{ marginBottom: '6px' }}>
               {pt}
             </li>
@@ -123,7 +123,7 @@ export const PdfPrintableSheet = React.forwardRef<
       )}
 
       {/* Revision Sheet */}
-      {notes.revisionSheet.length > 0 && (
+      {(notes.revisionSheet ?? notes.quick_revision_sheet ?? []).length > 0 && (
         <div
           style={{
             backgroundColor: '#eef2ff',
@@ -136,7 +136,7 @@ export const PdfPrintableSheet = React.forwardRef<
             Exam Revision Sheet
           </h2>
           <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '13px', lineHeight: 1.65, color: '#1e293b' }}>
-            {notes.revisionSheet.map((item, i) => (
+            {(notes.revisionSheet ?? notes.quick_revision_sheet ?? []).map((item, i) => (
               <li key={i} style={{ marginBottom: '5px' }}>
                 {item}
               </li>

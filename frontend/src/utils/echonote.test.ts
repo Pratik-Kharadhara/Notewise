@@ -9,6 +9,7 @@ import {
 } from './audioValidation';
 import { filterAndSortNotes, filterActivityByTab } from './notesFilters';
 import { mindmapJsonToMarkdown, countMindmapNodes } from './mindmapFormat';
+import { normalizeNotes } from './normalizeNotes';
 import type { Recording } from '../types/echonote';
 
 test('validateAudioFile accepts valid mp3, wav, m4a, and webm files', () => {
@@ -157,3 +158,40 @@ test('mindmapJsonToMarkdown builds hierarchical markdown and counts nodes', () =
   assert.match(md, /^### Page Table/m);
   assert.equal(countMindmapNodes(tree), 5);
 });
+
+test('mindmapJsonToMarkdown supports schema canonical node.title', () => {
+  const tree = {
+    title: 'Operating Systems',
+    children: [
+      {
+        title: 'Virtual Memory',
+        children: [{ title: 'Demand Paging' }],
+      },
+    ],
+  };
+
+  const md = mindmapJsonToMarkdown(tree);
+  assert.match(md, /^# Operating Systems/m);
+  assert.match(md, /^## Virtual Memory/m);
+  assert.match(md, /^### Demand Paging/m);
+  assert.equal(countMindmapNodes(tree), 3);
+});
+
+test('normalizeNotes normalizes database prompt snake_case to camelCase UI properties', () => {
+  const backendNotes = {
+    title: 'OS Lecture 4',
+    summary: 'Virtual memory concepts.',
+    key_points: ['Paging avoids external fragmentation', 'TLB caches page entries'],
+    definitions: [
+      { term: 'Page fault', definition: 'Interrupt raised by hardware when page not in RAM' },
+    ],
+    examples: ['32-bit x86 two-level paging'],
+    quick_revision_sheet: ['Review inverted page tables', 'Memorize TLB hit ratio formula'],
+  };
+
+  const normalized = normalizeNotes(backendNotes as any);
+  assert.deepEqual(normalized.keyPoints, ['Paging avoids external fragmentation', 'TLB caches page entries']);
+  assert.deepEqual(normalized.revisionSheet, ['Review inverted page tables', 'Memorize TLB hit ratio formula']);
+  assert.equal(normalized.definitions[0].meaning, 'Interrupt raised by hardware when page not in RAM');
+});
+

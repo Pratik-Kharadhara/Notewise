@@ -388,7 +388,7 @@ export function DashboardPage() {
                       Key Points Extracted
                     </p>
                     <ul className="space-y-2 text-sm text-slate-700">
-                      {spotlight.notes.keyPoints.slice(0, 3).map((pt, i) => (
+                      {(spotlight.notes.keyPoints ?? spotlight.notes.key_points ?? []).slice(0, 3).map((pt, i) => (
                         <li key={i} className="flex items-start gap-2">
                           <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-2 shrink-0" />
                           <span>{pt}</span>
@@ -401,7 +401,7 @@ export function DashboardPage() {
                       Exam Revision Highlight
                     </p>
                     <p className="text-sm font-medium text-slate-800 leading-relaxed">
-                      {spotlight.notes.revisionSheet[0] || spotlight.notes.summary}
+                      {(spotlight.notes.revisionSheet?.[0] ?? spotlight.notes.quick_revision_sheet?.[0]) || spotlight.notes.summary}
                     </p>
                     <Link
                       to={`/notes/${spotlight.id}`}

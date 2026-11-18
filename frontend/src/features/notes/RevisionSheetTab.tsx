@@ -4,13 +4,15 @@ import type { StructuredNotes } from '../../types/echonote';
 import { Card } from '../../components/ui/Card';
 
 export function RevisionSheetTab({ notes }: { notes: StructuredNotes }) {
+  // Support both camelCase (revisionSheet) and snake_case (quick_revision_sheet) from backend
+  const revisionItems = notes.revisionSheet ?? notes.quick_revision_sheet ?? [];
   const [checked, setChecked] = useState<Record<number, boolean>>({});
 
   const toggle = (idx: number) => {
     setChecked((prev) => ({ ...prev, [idx]: !prev[idx] }));
   };
 
-  const completedCount = notes.revisionSheet.filter((_, i) => checked[i]).length;
+  const completedCount = revisionItems.filter((_, i) => checked[i]).length;
 
   return (
     <div className="space-y-6">
@@ -26,12 +28,12 @@ export function RevisionSheetTab({ notes }: { notes: StructuredNotes }) {
             </h3>
           </div>
           <span className="text-xs font-bold text-indigo-700 bg-indigo-100 px-3 py-1.5 rounded-xl tabular-nums self-start sm:self-auto">
-            {completedCount} / {notes.revisionSheet.length} reviewed
+            {completedCount} / {revisionItems.length} reviewed
           </span>
         </div>
 
         <div className="space-y-3">
-          {notes.revisionSheet.map((item, idx) => {
+          {revisionItems.map((item, idx) => {
             const isDone = Boolean(checked[idx]);
             return (
               <button
@@ -67,7 +69,10 @@ export function RevisionSheetTab({ notes }: { notes: StructuredNotes }) {
             {notes.definitions.map((d, i) => (
               <div key={i} className="py-3 grid grid-cols-1 sm:grid-cols-3 gap-2 text-sm">
                 <dt className="font-bold text-slate-900">{d.term}</dt>
-                <dd className="sm:col-span-2 text-slate-600">{d.meaning}</dd>
+                <dd className="sm:col-span-2 text-slate-600">
+                  {/* Support both .meaning (camelCase) and .definition (snake_case) */}
+                  {d.meaning ?? d.definition}
+                </dd>
               </div>
             ))}
           </dl>

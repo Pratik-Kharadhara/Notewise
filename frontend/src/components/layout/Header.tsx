@@ -1,8 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, Bell, Menu, LogIn, LogOut, Clock, CheckCircle2, AlertCircle } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
-import { Avatar } from '../ui/Avatar';
+import { Search, Bell, Menu, Clock, CheckCircle2, AlertCircle } from 'lucide-react';
 import { api } from '../../services/index.js';
 import type { Recording } from '../../types/echonote';
 import { formatRelativeTime } from '../../utils/audioValidation';
@@ -13,15 +11,12 @@ interface HeaderProps {
 
 export function Header({ onOpenMobileMenu }: HeaderProps) {
   const navigate = useNavigate();
-  const { user, signOut } = useAuth();
   const [searchValue, setSearchValue] = useState('');
   const [notifOpen, setNotifOpen] = useState(false);
-  const [profileOpen, setProfileOpen] = useState(false);
   const [recentJobs, setRecentJobs] = useState<Recording[]>([]);
   const [hasActiveOrFailed, setHasActiveOrFailed] = useState(false);
 
   const notifRef = useRef<HTMLDivElement>(null);
-  const profileRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let active = true;
@@ -49,9 +44,6 @@ export function Header({ onOpenMobileMenu }: HeaderProps) {
     const handleOutside = (e: MouseEvent) => {
       if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
         setNotifOpen(false);
-      }
-      if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
-        setProfileOpen(false);
       }
     };
     document.addEventListener('mousedown', handleOutside);
@@ -96,10 +88,7 @@ export function Header({ onOpenMobileMenu }: HeaderProps) {
         <div className="relative" ref={notifRef}>
           <button
             type="button"
-            onClick={() => {
-              setNotifOpen((prev) => !prev);
-              setProfileOpen(false);
-            }}
+            onClick={() => setNotifOpen((prev) => !prev)}
             aria-label="Processing activity notifications"
             aria-expanded={notifOpen}
             className="p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-700 rounded-lg relative transition-colors focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-indigo-100"
@@ -175,81 +164,10 @@ export function Header({ onOpenMobileMenu }: HeaderProps) {
           )}
         </div>
 
-        <div className="h-7 w-px bg-slate-200 hidden sm:block" aria-hidden="true" />
-
-        {/* Profile menu */}
-        <div className="relative" ref={profileRef}>
-          <button
-            type="button"
-            onClick={() => {
-              setProfileOpen((prev) => !prev);
-              setNotifOpen(false);
-            }}
-            aria-label="Account menu"
-            aria-expanded={profileOpen}
-            className="flex items-center gap-3 rounded-xl p-1 hover:bg-slate-50 transition-colors focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-indigo-100"
-          >
-            <div className="text-right hidden sm:block">
-              <p className="text-sm font-semibold text-slate-900 leading-tight">
-                {user.name}
-              </p>
-              <p className="text-xs text-slate-500">{user.major}</p>
-            </div>
-            <Avatar name={user.name} />
-          </button>
-
-          {profileOpen && (
-            <div className="absolute right-0 mt-2 w-60 bg-white rounded-2xl border border-slate-200 shadow-xl p-2 z-50">
-              <div className="px-3 py-2 border-b border-slate-100 mb-1">
-                <p className="text-sm font-semibold text-slate-900 truncate">{user.name}</p>
-                <p className="text-xs text-slate-500 truncate">
-                  {user.email || 'Optional guest session'}
-                </p>
-              </div>
-              {user.isGuest ? (
-                <>
-                  <Link
-                    to="/login"
-                    onClick={() => setProfileOpen(false)}
-                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-50"
-                  >
-                    <LogIn className="w-4 h-4 text-indigo-600" />
-                    Sign in
-                  </Link>
-                  <Link
-                    to="/signup"
-                    onClick={() => setProfileOpen(false)}
-                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-50"
-                  >
-                    <LogIn className="w-4 h-4 text-slate-400" />
-                    Create account
-                  </Link>
-                </>
-              ) : (
-                <>
-                  <Link
-                    to="/login"
-                    onClick={() => setProfileOpen(false)}
-                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-50"
-                  >
-                    <LogIn className="w-4 h-4 text-indigo-600" />
-                    Switch account
-                  </Link>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      signOut();
-                      setProfileOpen(false);
-                    }}
-                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-medium text-rose-600 hover:bg-rose-50"
-                  >
-                    <LogOut className="w-4 h-4" />
-                    Sign out (Guest mode)
-                  </button>
-                </>
-              )}
-            </div>
-          )}
+        {/* Session indicator — no auth in MVP */}
+        <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200">
+          <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" aria-hidden="true" />
+          <span className="text-xs font-medium text-slate-600">Session active</span>
         </div>
       </div>
     </header>

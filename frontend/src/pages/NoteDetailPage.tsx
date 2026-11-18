@@ -15,7 +15,8 @@ import {
   Printer,
 } from 'lucide-react';
 import { api } from '../services/index.js';
-import type { Recording } from '../types/echonote';
+import type { Recording, StructuredNotes } from '../types/echonote';
+import { normalizeNotes } from '../utils/normalizeNotes';
 import { useToast } from '../context/ToastContext';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
@@ -69,6 +70,10 @@ export function NoteDetailPage() {
     setError(null);
     try {
       const rec = await api.getRecordingById(id);
+      // Normalize snake_case → camelCase note fields from backend
+      if (rec?.notes) {
+        rec.notes = normalizeNotes(rec.notes);
+      }
       setRecording(rec);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unable to load lecture note.');

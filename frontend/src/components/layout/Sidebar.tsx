@@ -47,7 +47,7 @@ export function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
             <Mic2 className="w-6 h-6" aria-hidden="true" />
           </div>
           <span className="text-xl font-bold tracking-tight text-slate-900">
-            EchoNote
+            Notewise
           </span>
         </Link>
         <button

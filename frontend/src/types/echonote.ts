@@ -22,16 +22,25 @@ export type PipelineStage =
 
 export interface DefinitionItem {
   term: string;
+  /** camelCase variant used by frontend */
   meaning: string;
+  /** snake_case variant returned by backend prompts */
+  definition?: string;
 }
 
 export interface StructuredNotes {
   title: string;
   summary: string;
-  keyPoints: string[];
+  /** camelCase variant (frontend / mock) */
+  keyPoints?: string[];
+  /** snake_case variant (backend prompts) */
+  key_points?: string[];
   definitions: DefinitionItem[];
   examples: string[];
-  revisionSheet: string[];
+  /** camelCase variant (frontend / mock) */
+  revisionSheet?: string[];
+  /** snake_case variant (backend prompts) */
+  quick_revision_sheet?: string[];
 }
 
 export interface CheatsheetSection {
@@ -44,7 +53,10 @@ export interface Cheatsheet {
 }
 
 export interface MindmapNode {
-  topic: string;
+  /** Canonical field per mindmap.schema.json */
+  title?: string;
+  /** Legacy / alternate field name */
+  topic?: string;
   children?: MindmapNode[];
 }
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
+import { SessionProvider } from './context/SessionContext';
 import { ToastProvider } from './context/ToastContext';
 import { AppLayout } from './components/layout/AppLayout';
 import { DashboardPage } from './pages/DashboardPage';
@@ -10,7 +10,12 @@ import { ProcessingPage } from './pages/ProcessingPage';
 import { NotesLibraryPage } from './pages/NotesLibraryPage';
 import { FoldersPage } from './pages/FoldersPage';
 import { NoteDetailPage } from './pages/NoteDetailPage';
-import { AuthPage } from './pages/AuthPage';
+
+/**
+ * Authentication is explicitly out of scope for the MVP (spec pages 7 & 14).
+ * Sessions are identified by a persistent UUID (x-session-id) stored in
+ * localStorage. The /login and /signup routes have been removed.
+ */
 
 function WithShell({ children }: { children: React.ReactNode }) {
   return <AppLayout>{children}</AppLayout>;
@@ -19,12 +24,9 @@ function WithShell({ children }: { children: React.ReactNode }) {
 export default function App() {
   return (
     <BrowserRouter>
-      <AuthProvider>
+      <SessionProvider>
         <ToastProvider>
           <Routes>
-            <Route path="/login" element={<AuthPage mode="login" />} />
-            <Route path="/signup" element={<AuthPage mode="signup" />} />
-
             <Route
               path="/"
               element={
@@ -82,10 +84,14 @@ export default function App() {
               }
             />
 
+            {/* Redirect legacy auth routes to dashboard */}
+            <Route path="/login" element={<Navigate to="/" replace />} />
+            <Route path="/signup" element={<Navigate to="/" replace />} />
+
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </ToastProvider>
-      </AuthProvider>
+      </SessionProvider>
     </BrowserRouter>
   );
 }

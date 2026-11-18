@@ -5,10 +5,8 @@ import { api } from '../../services/index.js';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Avatar } from '../../components/ui/Avatar';
-import { useAuth } from '../../context/AuthContext';
 
 export function LectureQaTab({ recording }: { recording: Recording }) {
-  const { user } = useAuth();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
@@ -39,7 +37,9 @@ export function LectureQaTab({ recording }: { recording: Recording }) {
     setLastFailedQuestion(null);
 
     try {
-      const res = await api.askLectureQuestion(recording.id, trimmed);
+      // Contract §2.5: POST /api/jobs/:job_id/qa — uses jobId, not recording.id
+      const jobId = recording.jobId;
+      const res = await api.askLectureQuestion(jobId, trimmed);
       const aiMsg: ChatMessage = {
         id: `a-${Date.now()}`,
         role: 'assistant',
@@ -76,7 +76,7 @@ export function LectureQaTab({ recording }: { recording: Recording }) {
       <div className="px-6 py-3.5 bg-indigo-50/70 border-b border-indigo-100 flex items-center gap-2.5 text-xs font-medium text-indigo-800">
         <ShieldCheck className="w-4 h-4 text-indigo-600 shrink-0" />
         <span>
-          Grounded strictly in this lecture’s transcript and study notes — answers do
+          Grounded strictly in this lecture's transcript and study notes — answers do
           not pull from unverified external sources.
         </span>
       </div>
@@ -144,7 +144,7 @@ export function LectureQaTab({ recording }: { recording: Recording }) {
                 </p>
               </div>
 
-              {msg.role === 'user' && <Avatar name={user.name} size="sm" tone="amber" />}
+              {msg.role === 'user' && <Avatar name="You" size="sm" tone="amber" />}
             </div>
           ))
         )}

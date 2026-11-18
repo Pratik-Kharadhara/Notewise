@@ -108,7 +108,7 @@ export function RecordPage() {
               Recording session
             </h1>
             <p className="text-slate-500 mt-1">
-              Capture your classroom audio now. EchoNote processes and transcribes it right after upload.
+              Capture your classroom audio now. Notewise processes and transcribes it right after upload.
             </p>
           </div>
 

@@ -1,18 +1,23 @@
 import type { MindmapNode } from '../types/echonote';
 
 /**
- * Converts EchoNote's nested { topic, children } JSON into Markdown headings/bullets
+ * Converts Notewise's nested mindmap JSON into Markdown headings/bullets
  * that markmap-lib's Transformer parses cleanly into an interactive SVG mindmap.
+ *
+ * Supports both field names to handle backend variance:
+ *   - node.title  (canonical — matches database/prompts/mindmap.schema.json)
+ *   - node.topic  (legacy / alternate)
  */
 export function mindmapJsonToMarkdown(node: MindmapNode, depth = 1): string {
-  const safeTopic = (node.topic || 'Untitled Topic').replace(/\n/g, ' ').trim();
+  // Accept either "title" (schema spec) or "topic" (legacy) — whichever is present
+  const label = (node.title || node.topic || 'Untitled Topic').replace(/\n/g, ' ').trim();
   const lines: string[] = [];
 
   if (depth <= 3) {
-    lines.push(`${'#'.repeat(depth)} ${safeTopic}`);
+    lines.push(`${'#'.repeat(depth)} ${label}`);
   } else {
     const indent = '  '.repeat(depth - 4);
-    lines.push(`${indent}- ${safeTopic}`);
+    lines.push(`${indent}- ${label}`);
   }
 
   if (Array.isArray(node.children)) {

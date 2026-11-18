@@ -4,6 +4,10 @@ import type { StructuredNotes } from '../../types/echonote';
 import { Card } from '../../components/ui/Card';
 
 export function NotesTabContent({ notes }: { notes: StructuredNotes }) {
+  // Support both camelCase (keyPoints) and snake_case (key_points) from backend
+  const keyPoints = notes.keyPoints ?? notes.key_points ?? [];
+  const definitions = notes.definitions ?? [];
+  const examples = notes.examples ?? [];
   return (
     <div className="space-y-6">
       {/* Executive summary */}
@@ -22,7 +26,7 @@ export function NotesTabContent({ notes }: { notes: StructuredNotes }) {
           Key Exam Points
         </h3>
         <ul className="space-y-3">
-          {notes.keyPoints.map((point, idx) => (
+          {keyPoints.map((point, idx) => (
             <li
               key={idx}
               className="flex items-start gap-3 p-3.5 rounded-2xl bg-slate-50 border border-slate-100 text-sm leading-6 text-slate-700"
@@ -37,19 +41,22 @@ export function NotesTabContent({ notes }: { notes: StructuredNotes }) {
       </Card>
 
       {/* Definitions */}
-      {notes.definitions.length > 0 && (
+      {definitions.length > 0 && (
         <section>
           <h3 className="text-lg font-bold text-slate-900 mb-4">
             Key Definitions &amp; Terms
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {notes.definitions.map((def, idx) => (
+            {definitions.map((def, idx) => (
               <div
                 key={idx}
                 className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm"
               >
                 <p className="text-sm font-bold text-indigo-700">{def.term}</p>
-                <p className="text-sm leading-6 text-slate-600 mt-2">{def.meaning}</p>
+                <p className="text-sm leading-6 text-slate-600 mt-2">
+                  {/* Support both .meaning (camelCase) and .definition (snake_case) */}
+                  {def.meaning ?? def.definition}
+                </p>
               </div>
             ))}
           </div>
@@ -57,14 +64,14 @@ export function NotesTabContent({ notes }: { notes: StructuredNotes }) {
       )}
 
       {/* Examples */}
-      {notes.examples.length > 0 && (
+      {examples.length > 0 && (
         <Card padding="lg" className="bg-amber-50/40 border-amber-200/80">
           <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
             <Lightbulb className="w-5 h-5 text-amber-600" />
             Worked Examples &amp; Classroom Illustrations
           </h3>
           <div className="space-y-3">
-            {notes.examples.map((ex, idx) => (
+            {examples.map((ex, idx) => (
               <div
                 key={idx}
                 className="flex items-start gap-3 p-4 rounded-2xl bg-white border border-amber-100 text-sm leading-6 text-slate-700"
