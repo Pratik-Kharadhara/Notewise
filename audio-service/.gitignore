@@ -4,6 +4,6 @@ __pycache__/
 venv/
 .venv/
 .env
-samples/**/*.wav
-samples/snr_report.csv
+samples/cleaned/*.wav
 *.mp3
+samples/snr_report.csv

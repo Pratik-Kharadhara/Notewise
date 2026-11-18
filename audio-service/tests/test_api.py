@@ -36,35 +36,36 @@ def test_clean_stereo_preserves_channels(client, make_wav):
 def test_rejects_wrong_extension(client, make_wav):
     r = _post(client, "audio.mp3", make_wav())
     assert r.status_code == 400
-    assert r.json()["error"]["code"] == "INVALID_FILE_TYPE"
+    assert r.json()["error"] == "INVALID_FILE_TYPE"
 
 
 def test_rejects_corrupted_file(client):
     r = _post(client, "bad.wav", b"this is a corrupt file")
     assert r.status_code == 400
-    assert r.json()["error"]["code"] == "CORRUPTED_AUDIO"
+    assert r.json()["error"] == "CORRUPTED_AUDIO"
 
 
 def test_rejects_truncated_wav(client, make_wav):
     r = _post(client, "cut.wav", make_wav()[:30])
     assert r.status_code == 400
-    assert r.json()["error"]["code"] == "CORRUPTED_AUDIO"
+    assert r.json()["error"] == "CORRUPTED_AUDIO"
 
 
 def test_rejects_too_short(client, make_wav):
     r = _post(client, "tiny.wav", make_wav(duration=0.005))
     assert r.status_code == 400
-    assert r.json()["error"]["code"] == "CORRUPTED_AUDIO"
+    assert r.json()["error"] == "CORRUPTED_AUDIO"
 
 
 def test_rejects_oversized(client, make_wav, monkeypatch):
     monkeypatch.setattr(settings, "max_file_size_mb", 0.01)  # ~10 KB
     r = _post(client, "big.wav", make_wav(duration=2.0))     # ~64 KB
     assert r.status_code == 413
-    assert r.json()["error"]["code"] == "FILE_TOO_LARGE"
+    assert r.json()["error"] == "FILE_TOO_LARGE"
 
 
 def test_missing_file_field(client):
     r = client.post("/clean")
     assert r.status_code == 422
-    assert r.json()["error"]["code"] == "INVALID_REQUEST"
+    assert r.json()["error"] == "INVALID_REQUEST"
+    assert "detail" in r.json()

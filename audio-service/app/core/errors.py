@@ -1,4 +1,4 @@
-"""Structured errors: every failure returns {"error": {"code", "message"}}."""
+"""Structured errors: every failure returns {"error": "<CODE>", "detail": "<message>"}."""
 import logging
 
 from fastapi import FastAPI, Request
@@ -38,7 +38,7 @@ class ProcessingError(AudioServiceError):
 
 
 def _body(code: str, message: str) -> dict:
-    return {"error": {"code": code, "message": message}}
+    return {"error": code, "detail": message}
 
 
 def register_exception_handlers(app: FastAPI) -> None:
