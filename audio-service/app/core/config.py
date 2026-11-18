@@ -15,7 +15,11 @@ class Settings(BaseSettings):
     # Spectral-gating parameters (noisereduce)
     nr_stationary: bool = False      # True = steady noise (fans); False = adaptive
     nr_prop_decrease: float = 0.6    # 0..1, how much noise to remove
-    nr_chunk_size: int = 600_000     # samples per processing chunk (bounds memory)
+    nr_chunk_size: int = 600_000     # samples per internal noisereduce chunk
+    # Long files are processed in blocks of this many seconds (bounds RAM use),
+    # each with `nr_pad_seconds` of surrounding audio as context.
+    nr_block_seconds: float = 30.0
+    nr_pad_seconds: float = 2.0
 
     @property
     def max_file_size_bytes(self) -> int:

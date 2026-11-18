@@ -54,3 +54,31 @@ def test_digital_silence_does_not_inflate_snr():
 def test_silent_audio_raises():
     with pytest.raises(ValueError):
         estimate_snr_db(np.zeros(16000), 16000)
+
+
+def test_block_processing_preserves_length_channels_and_rate(tmp_path, make_wav, monkeypatch):
+    monkeypatch.setattr(settings, "nr_stationary", True)
+    monkeypatch.setattr(settings, "nr_block_seconds", 0.4)   # 2 s file -> 5 blocks
+    monkeypatch.setattr(settings, "nr_pad_seconds", 0.1)
+    src, dst = tmp_path / "in.wav", tmp_path / "out.wav"
+    src.write_bytes(make_wav(duration=2.0, sr=16000, channels=2))
+
+    reduce_noise_wav(src, dst)
+
+    before, sr_in = sf.read(src, always_2d=True)
+    after, sr_out = sf.read(dst, always_2d=True)
+    assert sr_out == sr_in == 16000
+    assert after.shape == before.shape  # same frames and channels
+
+
+def test_truncated_data_is_cleaned_up_to_the_cut(tmp_path, make_wav):
+    """libsndfile treats a cut-off file as ending where its bytes end, so the
+    readable part is cleaned and nothing crashes."""
+    src, dst = tmp_path / "in.wav", tmp_path / "out.wav"
+    src.write_bytes(make_wav(duration=2.0)[:20000])  # header intact, data cut short
+
+    reduce_noise_wav(src, dst)
+
+    frames_in = sf.info(src).frames
+    assert frames_in < 32000                  # really truncated (full file = 32000)
+    assert sf.info(dst).frames == frames_in   # output matches what was readable
